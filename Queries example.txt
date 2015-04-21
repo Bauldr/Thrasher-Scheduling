@@ -1,0 +1,117 @@
+1)   
+	SELECT ename, salary
+
+	FROM Employee e
+	
+WHERE e.eid IN (
+			SELECT d.managerid 
+			FROM Department d
+			)
+
+	ORDER BY salary DESC
+
+2)
+
+	SELECT e.ename, (
+			 SELECT ename
+	
+			 FROM Employee e1
+
+			 WHERE e1.eid IN (
+					  SELECT d.managerid 
+					  FROM Department d 
+					  WHERE d.did = (
+  							 SELECT w.did 
+							 FROM Works w 
+							 WHERE e.eid = w.eid
+							)
+					 ) 
+    			
+			)
+	
+
+FROM Employee e
+
+	WHERE e.ename LIKE 'D% L%'
+
+
+3)
+	SELECT e.ename, e.age
+	
+FROM Employee e
+	
+WHERE e.eid IN (
+			SELECT w.eid 
+			FROM Works w 
+			WHERE did = 4
+		       )
+
+	GROUP BY salary DESC
+	
+LIMIT 1
+
+4)
+	SELECT e.ename
+
+	FROM Employee e
+
+	WHERE e.eid IN (
+			SELECT w.eid 
+			FROM Works w 
+			WHERE did = 1)
+	 AND e.eid NOT IN (
+			    SELECT w1.eid 
+			    FROM Works w1 
+			    WHERE did <> 1
+			  )
+
+5)
+	SELECT e.ename
+
+	FROM Employee e
+
+	WHERE e.eid - any (
+			   SELECT w.eid
+			   FROM works w
+			   WHERE w.pct_time < 100
+			  )
+6)
+
+	SELECT e.ename
+
+	FROM Employee e
+	WHERE e.eid IN (
+			SELECT w.eid
+			FROM Works w
+			WHERE w.did = any(
+					  SELECT d1.did
+					  FROM Department d1, Department d2
+					  WHERE d1.managerid = d2.managerid
+					 )
+		       )
+
+7)
+
+	SELECT d.dname, (
+			  SELECT SUM(e.salary) 
+			  FROM Employee e 
+			  WHERE eid = e.eid AND did = d.did
+			) / d.budget
+	
+FROM Department d
+
+8)
+
+	SELECT *
+	
+FROM Department d
+
+	WHERE EXISTS (
+		      SELECT w.eid 
+		      FROM Works w
+		      WHERE d.did = w.did AND w.eid IN (
+							SELECT e.eid 
+							FROM Employee e 
+							WHERE e. age >= 50
+							)
+		     )
